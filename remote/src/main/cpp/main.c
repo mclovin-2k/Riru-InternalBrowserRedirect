@@ -25,8 +25,7 @@ static void on_app_fork(JNIEnv *env, jstring jAppDataDir) {
     if (jAppDataDir) {
         const char *appDataDir = (*env)->GetStringUTFChars(env, jAppDataDir, NULL);
         int user = 0;
-        while (appDataDir)
-        {
+        while (appDataDir) {
             // /data/user/<user_id>/<package>
             if (sscanf(appDataDir, "/data/%*[^/]/%d/%s", &user, package_name) == 2)
                 break;
@@ -56,8 +55,10 @@ static void nativeForkAndSpecializePre(
         JNIEnv *env, jclass clazz, jint *_uid, jint *gid, jintArray *gids, jint *runtimeFlags,
         jobjectArray *rlimits, jint *mountExternal, jstring *seInfo, jstring *niceName,
         jintArray *fdsToClose, jintArray *fdsToIgnore, jboolean *is_child_zygote,
-        jstring *instructionSet, jstring *appDataDir, jboolean *isTopApp, jobjectArray *pkgDataInfoList,
-        jobjectArray *whitelistedDataInfoList, jboolean *bindMountAppDataDirs, jboolean *bindMountAppStorageDirs){
+        jstring *instructionSet, jstring *appDataDir, jboolean *isTopApp,
+        jobjectArray *pkgDataInfoList,
+        jobjectArray *whitelistedDataInfoList, jboolean *bindMountAppDataDirs,
+        jboolean *bindMountAppStorageDirs) {
     on_app_fork(env, *appDataDir);
 }
 
@@ -68,7 +69,7 @@ static void nativeForkAndSpecializePost(JNIEnv *env, jclass clazz, jint res) {
 }
 
 static void nativeForkSystemServerPost(JNIEnv *env, jclass clazz, jint res) {
-    if ( res == 0 ) {
+    if (res == 0) {
         __system_property_set(SERVICE_STATUE_KEY, "system_server_forked");
         invoke_inject_method(env, "system_server_forked");
     }
@@ -78,9 +79,9 @@ static void onModuleLoaded() {
     char buffer[4096];
     char *p = NULL;
 
-    strcpy(buffer,(p = getenv("CLASSPATH")) ? p : "");
-    strcat(buffer,":" DEX_PATH);
-    setenv("CLASSPATH",buffer,1);
+    strcpy(buffer, (p = getenv("CLASSPATH")) ? p : "");
+    strcat(buffer, ":" DEX_PATH);
+    setenv("CLASSPATH", buffer, 1);
 
     hook_install(&init_inject_class_method);
 
@@ -123,7 +124,9 @@ void *init(void *arg) {
     switch (step) {
         case 1: {
             int core_max_api_version = *(int *) arg;
-            riru_api_version = core_max_api_version <= RIRU_MODULE_API_VERSION ? core_max_api_version : RIRU_MODULE_API_VERSION;
+            riru_api_version =
+                    core_max_api_version <= RIRU_MODULE_API_VERSION ? core_max_api_version
+                                                                    : RIRU_MODULE_API_VERSION;
             return &riru_api_version;
         }
         case 2: {
@@ -133,7 +136,8 @@ void *init(void *arg) {
                 case 9: {
                     riru_api_v9 = (RiruApiV9 *) arg;
 
-                    RiruModuleInfoV9* module = (RiruModuleInfoV9 *) malloc(sizeof(RiruModuleInfoV9));
+                    RiruModuleInfoV9 *module = (RiruModuleInfoV9 *) malloc(
+                            sizeof(RiruModuleInfoV9));
                     memset(module, 0, sizeof(RiruModuleInfoV9));
                     _module = module;
 

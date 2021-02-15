@@ -5,8 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import com.github.kr328.ibr.R
-import kotlinx.android.synthetic.main.adapter_app_item.view.*
+import com.github.kr328.ibr.databinding.AdapterAppItemBinding
 
 class AppItemAdapter(private val context: Context,
                      private val appInfoData: List<Item>) : BaseAdapter() {
@@ -26,12 +25,13 @@ class AppItemAdapter(private val context: Context,
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         return (convertView
-                ?: LayoutInflater.from(context).inflate(R.layout.adapter_app_item, parent, false)).apply {
+                ?: AdapterAppItemBinding.inflate(LayoutInflater.from(context), parent, false).root).also {
             val current = appInfoData[position]
-
-            adapter_app_item_icon.setImageDrawable(context.packageManager.getApplicationIcon(current.packageName))
-            adapter_app_item_name.text = current.name
-            adapter_app_item_description.text = current.packageName
+            AdapterAppItemBinding.bind(it).apply {
+                adapterAppItemIcon.setImageDrawable(context.packageManager.getApplicationIcon(current.packageName))
+                adapterAppItemName.text = current.name
+                adapterAppItemDescription.text = current.packageName
+            }
         }
     }
 }

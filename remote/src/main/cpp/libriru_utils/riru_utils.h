@@ -22,6 +22,3 @@ typedef struct riru_utils_jni_replace_method_s {
 
 int riru_utils_replace_native_functions(riru_utils_native_replace_t *functions, int length);
 int riru_utils_replace_jni_methods(riru_utils_jni_replace_method_t *classes ,int length ,JNIEnv *env);
-
-//Return Riru version
-int riru_utils_init_module(const char *module_name);

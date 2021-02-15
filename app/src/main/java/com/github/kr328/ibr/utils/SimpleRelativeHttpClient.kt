@@ -1,6 +1,6 @@
 package com.github.kr328.ibr.utils
 
-import kotlinx.io.IOException
+import java.io.IOException
 import java.net.URL
 
 class SimpleRelativeHttpClient(var baseUrl: String) {

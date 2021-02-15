@@ -5,25 +5,28 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.kr328.ibr.adapters.AppListAdapter
 import com.github.kr328.ibr.components.AppListComponent
+import com.github.kr328.ibr.databinding.ActivityMainBinding
 import com.github.kr328.ibr.model.AppListElement
 import com.github.kr328.ibr.remote.RemoteConnection
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var component: AppListComponent
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater, findViewById<View>(android.R.id.content).rootView as ViewGroup)
+        setContentView(binding.root)
 
         component = AppListComponent(MainApplication.fromContext(this))
 
@@ -31,12 +34,12 @@ class MainActivity : AppCompatActivity() {
             showException(exception)
         }
 
-        activity_main_main_list.adapter = AppListAdapter(this) {
+        binding.activityMainMainList.adapter = AppListAdapter(this) {
             startActivity(Intent(this, AppEditActivity::class.java).setData(Uri.parse("package://$it")))
         }
-        activity_main_main_list.layoutManager = LinearLayoutManager(this)
+        binding.activityMainMainList.layoutManager = LinearLayoutManager(this)
 
-        activity_main_main_swipe.setOnRefreshListener {
+        binding.activityMainMainSwipe.setOnRefreshListener {
             component.commandChannel.sendCommand(AppListComponent.COMMAND_REFRESH_ONLINE_RULES, true)
         }
 
@@ -44,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         component.commandChannel.registerReceiver(AppListComponent.COMMAND_SHOW_REFRESHING) { _, show: Boolean? ->
             runOnUiThread {
-                with(activity_main_main_swipe) {
+                with(binding.activityMainMainSwipe) {
                     if (show != isRefreshing) {
                         isRefreshing = show ?: false
                     }
@@ -92,7 +95,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateList(newData: List<AppListElement>) {
-        val adapter = activity_main_main_list.adapter as AppListAdapter
+        val adapter = binding.activityMainMainList.adapter as AppListAdapter
         val oldData = adapter.appListElement
 
         val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {

@@ -19,4 +19,19 @@ public interface IServiceManager extends IInterface {
             throws RemoteException;
 
     String[] listServices() throws RemoteException;
+
+    // R
+    boolean isDeclared(String name) throws RemoteException;
+
+    void registerForNotifications(String name, IServiceCallback callback) throws RemoteException;
+
+    void unregisterForNotifications(String name, IServiceCallback callback) throws RemoteException;
+
+    String[] getDeclaredInstances(String iface) throws RemoteException;
+
+    void registerClientCallback(String name, IBinder service, IClientCallback callback) throws RemoteException;
+
+    void tryUnregisterService(String name, IBinder service) throws RemoteException;
+
+    ServiceDebugInfo[] getServiceDebugInfo() throws RemoteException;
 }

@@ -19,6 +19,14 @@ allprojects {
         google()
         jcenter()
     }
+    ext {
+        moduleId = "ibr"
+        versionCode = 1
+        versionName = "1.0"
+        moduleMinRiruApiVersion = 10
+        moduleMinRiruVersionName = "v23.0"
+        moduleMaxRiruApiVersion = 10
+    }
 }
 
 task clean(type: Delete) {

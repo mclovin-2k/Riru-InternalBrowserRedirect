@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater, findViewById<View>(android.R.id.content).rootView as ViewGroup)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         component = AppListComponent(MainApplication.fromContext(this))

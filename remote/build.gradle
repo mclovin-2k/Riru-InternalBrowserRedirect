@@ -1,14 +1,5 @@
 apply plugin: 'com.android.application'
 
-ext {
-    moduleId = "riru_ibr"
-    riruModuleId = "ibr"
-
-    moduleRiruApiVersion = 10
-    versionCode = 1
-    versionName = "1.0"
-}
-
 repositories {
     mavenLocal()
     jcenter()
@@ -29,7 +20,7 @@ android {
             cmake {
                 abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
                 arguments "-DMODULE_NAME:STRING=$moduleId",
-                        "-DRIRU_MODULE_API_VERSION=$moduleRiruApiVersion",
+                        "-DRIRU_MODULE_API_VERSION=$moduleMinRiruApiVersion",
                         "-DRIRU_MODULE_VERSION=$versionCode",
                         "-DRIRU_MODULE_VERSION_NAME:STRING=\"$versionName\""
             }
@@ -63,25 +54,18 @@ dependencies {
     compileOnly project(":hideapi")
 }
 
-task createRemoteJar(type: Jar) {
-    from zipTree("$buildDir/outputs/apk/release/remote-release-unsigned.apk")
-    include "classes.dex"
-
-    destinationDirectory = file("$buildDir/outputs")
-    archiveFileName = "boot-internal-browser-redirect.jar"
-}
-
 task extractRemoteLibrary(type: Copy) {
     from zipTree("$buildDir/outputs/apk/release/remote-release-unsigned.apk")
     include "lib/**"
+    include "*.dex"
     into "$buildDir/outputs/remote-library/"
 
     eachFile {
         path = path.replaceAll("^lib/", "")
     }
+    outputs.upToDateWhen { false }
 }
 
 afterEvaluate {
-    createRemoteJar.dependsOn assembleRelease
     extractRemoteLibrary.dependsOn assembleRelease
 }

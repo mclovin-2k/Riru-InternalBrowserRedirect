@@ -12,7 +12,7 @@
 #include "log.h"
 #include "inject.h"
 
-#define DEX_PATH    "/system/framework/boot-internal-browser-redirect.jar"
+#define DEX_PATH    "/system/framework/ibr.dex"
 #define RULES_PATH  "/data/misc/internal_browser_redirect/userdata/rules.%s.json"
 #define SERVICE_STATUE_KEY "sys.ibr.status"
 
@@ -47,8 +47,6 @@ static void on_app_fork(JNIEnv *env, jstring jAppDataDir) {
     sprintf(path_buffer, RULES_PATH, package_name);
 
     enable_inject = access(path_buffer, F_OK) == 0;
-
-    //LOGD("file = %s, data = %s", config_path_buffer, app_fork_argument);
 }
 
 static void nativeForkAndSpecializePre(
@@ -64,28 +62,21 @@ static void nativeForkAndSpecializePre(
 
 static void nativeForkAndSpecializePost(JNIEnv *env, jclass clazz, jint res) {
     if (res == 0 && enable_inject) {
-        invoke_inject_method(env, "app_forked");
+        load_and_invoke_dex(env, "app_forked");
     }
 }
 
 static void nativeForkSystemServerPost(JNIEnv *env, jclass clazz, jint res) {
     if (res == 0) {
         __system_property_set(SERVICE_STATUE_KEY, "system_server_forked");
-        invoke_inject_method(env, "system_server_forked");
+        load_and_invoke_dex(env, "system_server_forked");
     }
 }
 
 static void onModuleLoaded() {
-    char buffer[4096];
-    char *p = NULL;
-
-    strcpy(buffer, (p = getenv("CLASSPATH")) ? p : "");
-    strcat(buffer, ":" DEX_PATH);
-    setenv("CLASSPATH", buffer, 1);
-
-    hook_install(&init_inject_class_method);
-
-    __system_property_set(SERVICE_STATUE_KEY, "riru_loaded");
+    LOGI("welcome to ibr");
+    preloadDex(DEX_PATH);
+//    __system_property_set(SERVICE_STATUE_KEY, "riru_loaded");
 }
 
 
@@ -115,7 +106,7 @@ RiruApiV9 *riru_api_v9;
  *   returns: (ignored)
  *
  */
-void *init(void *arg) {
+RIRU_EXPORT void *init(void *arg) {
     static int step = 0;
     step += 1;
 

@@ -1,5 +1,21 @@
+import org.apache.tools.ant.filters.FixCrLfFilter
+import org.gradle.internal.os.OperatingSystem
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+}
+ext {
+    is_windows = OperatingSystem.current().isWindows()
+    zipFileName = "riru-internal-browser-redirect.zip"
+}
+
 task magisk(type: Zip) {
-    from(project(":remote").file("build/outputs/boot-internal-browser-redirect.jar")) {
+    from(project(":remote").file("build/outputs/remote-library")) {
+        include("classes.dex")
+        rename("classes.dex", "ibr.dex")
         into "system/framework/"
     }
     from(project(":remote").fileTree("build/outputs/remote-library/armeabi-v7a")) {
@@ -10,23 +26,75 @@ task magisk(type: Zip) {
         include "*.so"
         into "system/lib64"
     }
-    from(project(":app").file("build/outputs/apk/release/app-release.apk")) {
+    from(project(":remote").file("build/outputs/remote-library")) {
+        include("classes.dex")
+        rename("classes.dex", "ibr.dex")
+        into "system_x86/framework/"
+    }
+    from(project(":remote").fileTree("build/outputs/remote-library/x86")) {
+        include "*.so"
+        into "system_x86/lib"
+    }
+    from(project(":remote").fileTree("build/outputs/remote-library/x86_64")) {
+        include "*.so"
+        into "system_x86/lib64"
+    }
+    from(project(":app").file("build/outputs/apk/release/app-release-unsigned.apk")) {
         rename {
             "app.apk"
         }
     }
-    from(file("src/main/raw/magisk"))
+    from(file("src/main/raw/magisk")) {
+        filter { line ->
+            line.replaceAll('%%%RIRU_MODULE_ID%%%', moduleId)
+                    .replaceAll('%%%RIRU_MODULE_API_VERSION%%%', moduleMaxRiruApiVersion.toString())
+                    .replaceAll('%%%RIRU_MODULE_MIN_API_VERSION%%%', moduleMinRiruApiVersion.toString())
+                    .replaceAll('%%%RIRU_MODULE_MIN_RIRU_VERSION_NAME%%%', moduleMinRiruVersionName)
+        }
+        filter(FixCrLfFilter.class, eol: FixCrLfFilter.CrLf.newInstance("lf"))
+    }
 
     destinationDirectory = file("$buildDir/outputs")
-    archiveFileName = "riru-internal-browser-redirect.zip"
+    archiveFileName = "$zipFileName"
+
+    outputs.upToDateWhen { false }
 }
 
-task clean(type: Delete) {
-    delete buildDir
+task push(type: Exec) {
+    dependsOn magisk
+    def zipFile = "$buildDir/outputs/$zipFileName"
+    def commands = [android.adbExecutable, "push",
+                    zipFile,
+                    "/data/local/tmp/"]
+    if (is_windows) {
+        commandLine 'cmd', '/c', commands.join(" ")
+    } else {
+        commandLine commands
+    }
+}
+
+task flash(type: Exec) {
+    dependsOn push
+    def commands = [android.adbExecutable, "shell", "su", "-c",
+                    "magisk --install-module /data/local/tmp/$zipFileName"]
+    if (is_windows) {
+        commandLine 'cmd', '/c', commands.join(" ")
+    } else {
+        commandLine commands
+    }
+}
+
+task flashAndReboot(type: Exec) {
+    dependsOn flash
+    def commands = [android.adbExecutable, "reboot"]
+    if (is_windows) {
+        commandLine 'cmd', '/c', commands.join(" ")
+    } else {
+        commandLine commands
+    }
 }
 
 gradle.projectsEvaluated {
     magisk.dependsOn(project(":remote").tasks.getByName("extractRemoteLibrary"))
-    magisk.dependsOn(project(":remote").tasks.getByName("createRemoteJar"))
     magisk.dependsOn(project(":app").tasks.getByName("assembleRelease"))
 }

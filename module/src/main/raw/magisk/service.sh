@@ -19,7 +19,7 @@ do
     fi
 done
 
-kill ${LOGCAT_PID}
+kill -9 ${LOGCAT_PID}
 
 if [[ ! -f "$MODDIR/apk_installed" ]];then
   cp "$MODDIR/app.apk" "$TEMP_APK_PATH"

@@ -2,9 +2,12 @@ package com.github.kr328.ibr.remote.proxy;
 
 import android.annotation.SuppressLint;
 import android.os.IBinder;
+import android.os.IClientCallback;
 import android.os.IPermissionController;
+import android.os.IServiceCallback;
 import android.os.IServiceManager;
 import android.os.RemoteException;
+import android.os.ServiceDebugInfo;
 import android.os.ServiceManager;
 import android.os.ServiceManagerNative;
 import android.util.Log;
@@ -99,6 +102,41 @@ public class ServiceManagerProxy implements IServiceManager {
     @Override
     public String[] listServices() throws RemoteException {
         return getOriginal().listServices();
+    }
+
+    @Override
+    public boolean isDeclared(String name) throws RemoteException {
+        return getOriginal().isDeclared(name);
+    }
+
+    @Override
+    public void registerForNotifications(String name, IServiceCallback callback)throws RemoteException {
+        getOriginal().registerForNotifications(name, callback);
+    }
+
+    @Override
+    public void unregisterForNotifications(String name, IServiceCallback callback) throws RemoteException{
+        getOriginal().unregisterForNotifications(name, callback);
+    }
+
+    @Override
+    public String[] getDeclaredInstances(String iface) throws RemoteException {
+        return getOriginal().getDeclaredInstances(iface);
+    }
+
+    @Override
+    public void registerClientCallback(String name, IBinder service, IClientCallback callback) throws RemoteException {
+        getOriginal().registerClientCallback(name, service, callback);
+    }
+
+    @Override
+    public void tryUnregisterService(String name, IBinder service) throws RemoteException {
+        getOriginal().tryUnregisterService(name, service);
+    }
+
+    @Override
+    public ServiceDebugInfo[] getServiceDebugInfo() throws RemoteException {
+        return getOriginal().getServiceDebugInfo();
     }
 
     @Override

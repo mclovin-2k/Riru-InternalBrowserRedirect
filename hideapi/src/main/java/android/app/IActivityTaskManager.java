@@ -20,6 +20,19 @@ public interface IActivityTaskManager extends IInterface {
                       Bundle options              // 9
     ) throws RemoteException;
 
+    int startActivity(IApplicationThread caller,  // 0
+                      String callingPackage,      // 1
+                      String callingFeatureId,    // 2
+                      Intent intent,              // 3
+                      String resolvedType,        // 4
+                      IBinder resultTo,           // 5
+                      String resultWho,           // 6
+                      int requestCode,            // 7
+                      int flags,                  // 8
+                      ProfilerInfo profilerInfo,  // 9
+                      Bundle options              // 10
+    ) throws RemoteException;
+
     class Stub extends Binder implements IActivityTaskManager {
         public static IActivityTaskManager asInterface(IBinder binder) {
             throw new IllegalArgumentException("Unsupported");
@@ -27,6 +40,11 @@ public interface IActivityTaskManager extends IInterface {
 
         @Override
         public int startActivity(IApplicationThread caller, String callingPackage, Intent intent, String resolvedType, IBinder resultTo, String resultWho, int requestCode, int flags, ProfilerInfo profilerInfo, Bundle options) {
+            throw new IllegalArgumentException("Stub!");
+        }
+
+        @Override
+        public int startActivity(IApplicationThread caller, String callingPackage, String callingFeatureId, Intent intent, String resolvedType, IBinder resultTo, String resultWho, int requestCode, int flags, ProfilerInfo profilerInfo, Bundle options) throws RemoteException {
             throw new IllegalArgumentException("Stub!");
         }
 
@@ -42,6 +60,11 @@ public interface IActivityTaskManager extends IInterface {
 
             @Override
             public int startActivity(IApplicationThread caller, String callingPackage, Intent intent, String resolvedType, IBinder resultTo, String resultWho, int requestCode, int flags, ProfilerInfo profilerInfo, Bundle options) {
+                throw new IllegalArgumentException("Stub!");
+            }
+
+            @Override
+            public int startActivity(IApplicationThread caller, String callingPackage, String callingFeatureId, Intent intent, String resolvedType, IBinder resultTo, String resultWho, int requestCode, int flags, ProfilerInfo profilerInfo, Bundle options) throws RemoteException {
                 throw new IllegalArgumentException("Stub!");
             }
 

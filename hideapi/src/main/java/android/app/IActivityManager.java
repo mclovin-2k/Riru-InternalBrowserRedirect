@@ -20,6 +20,19 @@ public interface IActivityManager extends IInterface {
                       Bundle options              // 9
     ) throws RemoteException;
 
+    int startActivityWithFeature(IApplicationThread caller,  // 0
+                      String callingPackage,      // 1
+                      String callingFeatureId,    // 2
+                      Intent intent,              // 3
+                      String resolvedType,        // 4
+                      IBinder resultTo,           // 5
+                      String resultWho,           // 6
+                      int requestCode,            // 7
+                      int flags,                  // 8
+                      ProfilerInfo profilerInfo,  // 9
+                      Bundle options              // 10
+    ) throws RemoteException;
+
     void forceStopPackage(String packageName, int userId) throws RemoteException;
 
     abstract class Stub extends Binder implements IActivityManager {

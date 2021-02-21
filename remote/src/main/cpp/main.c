@@ -47,6 +47,7 @@ static void on_app_fork(JNIEnv *env, jstring jAppDataDir) {
     sprintf(path_buffer, RULES_PATH, package_name);
 
     enable_inject = access(path_buffer, F_OK) == 0;
+    LOGD("should hook %s: %d", package_name, enable_inject);
 }
 
 static void nativeForkAndSpecializePre(

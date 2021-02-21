@@ -28,20 +28,34 @@ abstract class BaseClientActivityManagerProxy {
         Method sb = null;
 
         try {
-            sa = IActivityManager.class.getMethod("startActivity",
-                    IApplicationThread.class, String.class, Intent.class,
-                    String.class, IBinder.class, String.class, int.class,
-                    int.class, ProfilerInfo.class, Bundle.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                sa = IActivityManager.class.getMethod("startActivity",
+                        IApplicationThread.class, String.class, Intent.class,
+                        String.class, IBinder.class, String.class, int.class,
+                        int.class, ProfilerInfo.class, Bundle.class);
+            } else {
+                sa = IActivityManager.class.getMethod("startActivityWithFeature",
+                        IApplicationThread.class, String.class, String.class, Intent.class,
+                        String.class, IBinder.class, String.class, int.class,
+                        int.class, ProfilerInfo.class, Bundle.class);
+            }
         } catch (NoSuchMethodException e) {
             Log.e(Constants.TAG, "IActivityManager.startActivity not found", e);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             try {
-                sat = IActivityTaskManager.class.getMethod("startActivity",
-                        IApplicationThread.class, String.class, Intent.class,
-                        String.class, IBinder.class, String.class, int.class,
-                        int.class, ProfilerInfo.class, Bundle.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    sat = IActivityTaskManager.class.getMethod("startActivity",
+                            IApplicationThread.class, String.class, String.class, Intent.class,
+                            String.class, IBinder.class, String.class, int.class,
+                            int.class, ProfilerInfo.class, Bundle.class);
+                } else {
+                    sat = IActivityTaskManager.class.getMethod("startActivity",
+                            IApplicationThread.class, String.class, Intent.class,
+                            String.class, IBinder.class, String.class, int.class,
+                            int.class, ProfilerInfo.class, Bundle.class);
+                }
             } catch (NoSuchMethodException e) {
                 Log.e(Constants.TAG, "IActivityTaskManager.startActivity not found", e);
             }
@@ -79,17 +93,31 @@ abstract class BaseClientActivityManagerProxy {
                         new Class[]{IActivityManager.class},
                         (instance, method, args) -> {
                             if (method.equals(startActivity)) {
-                                StartActivityPayloads payloads = new StartActivityPayloads();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                    StartActivityPayloads payloads = new StartActivityPayloads();
 
-                                payloads.callingPackage = (String) args[1];
-                                payloads.intent = (Intent) args[2];
-                                payloads.options = (Bundle) args[9];
+                                    payloads.callingPackage = (String) args[1];
+                                    payloads.intent = (Intent) args[3];
+                                    payloads.options = (Bundle) args[10];
 
-                                handleStartActivity(payloads);
+                                    handleStartActivity(payloads);
 
-                                args[1] = payloads.callingPackage;
-                                args[2] = payloads.intent;
-                                args[9] = payloads.options;
+                                    args[1] = payloads.callingPackage;
+                                    args[3] = payloads.intent;
+                                    args[10] = payloads.options;
+                                } else {
+                                    StartActivityPayloads payloads = new StartActivityPayloads();
+
+                                    payloads.callingPackage = (String) args[1];
+                                    payloads.intent = (Intent) args[2];
+                                    payloads.options = (Bundle) args[9];
+
+                                    handleStartActivity(payloads);
+
+                                    args[1] = payloads.callingPackage;
+                                    args[2] = payloads.intent;
+                                    args[9] = payloads.options;
+                                }
                             } else if (method.equals(asBinder)) {
                                 return original;
                             }
@@ -110,17 +138,31 @@ abstract class BaseClientActivityManagerProxy {
                         new Class[]{IActivityTaskManager.class},
                         (instance, method, args) -> {
                             if (method.equals(startActivityTask)) {
-                                StartActivityPayloads payloads = new StartActivityPayloads();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                    StartActivityPayloads payloads = new StartActivityPayloads();
 
-                                payloads.callingPackage = (String) args[1];
-                                payloads.intent = (Intent) args[2];
-                                payloads.options = (Bundle) args[9];
+                                    payloads.callingPackage = (String) args[1];
+                                    payloads.intent = (Intent) args[3];
+                                    payloads.options = (Bundle) args[10];
 
-                                handleStartActivity(payloads);
+                                    handleStartActivity(payloads);
 
-                                args[1] = payloads.callingPackage;
-                                args[2] = payloads.intent;
-                                args[9] = payloads.options;
+                                    args[1] = payloads.callingPackage;
+                                    args[3] = payloads.intent;
+                                    args[10] = payloads.options;
+                                } else {
+                                    StartActivityPayloads payloads = new StartActivityPayloads();
+
+                                    payloads.callingPackage = (String) args[1];
+                                    payloads.intent = (Intent) args[2];
+                                    payloads.options = (Bundle) args[9];
+
+                                    handleStartActivity(payloads);
+
+                                    args[1] = payloads.callingPackage;
+                                    args[2] = payloads.intent;
+                                    args[9] = payloads.options;
+                                }
                             } else if (method.equals(asBinder)) {
                                 return original;
                             }

@@ -29,13 +29,13 @@ abstract class BaseClientActivityManagerProxy {
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                sa = IActivityManager.class.getMethod("startActivity",
-                        IApplicationThread.class, String.class, Intent.class,
+                sa = IActivityManager.class.getMethod("startActivityWithFeature",
+                        IApplicationThread.class, String.class, String.class, Intent.class,
                         String.class, IBinder.class, String.class, int.class,
                         int.class, ProfilerInfo.class, Bundle.class);
             } else {
-                sa = IActivityManager.class.getMethod("startActivityWithFeature",
-                        IApplicationThread.class, String.class, String.class, Intent.class,
+                sa = IActivityManager.class.getMethod("startActivity",
+                        IApplicationThread.class, String.class, Intent.class,
                         String.class, IBinder.class, String.class, int.class,
                         int.class, ProfilerInfo.class, Bundle.class);
             }

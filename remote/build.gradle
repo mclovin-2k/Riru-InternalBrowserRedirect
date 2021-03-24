@@ -3,7 +3,6 @@ apply plugin: 'com.android.application'
 repositories {
     mavenLocal()
     jcenter()
-    maven { url 'https://dl.bintray.com/rikkaw/Libraries' }
 }
 
 android {
@@ -49,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation 'rikka.ndk:riru:10'
+    implementation 'dev.rikka.ndk:riru:25.0.0'
     implementation project(":shared")
     compileOnly project(":hideapi")
 }

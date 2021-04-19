@@ -24,11 +24,22 @@ android {
         versionName "11.6"
     }
 
+    signingConfigs {
+        debug {
+            storeFile file('../keystore.jks')
+            storePassword "KeyStorePassword"
+            keyAlias "InternalBrowserRedirectApp"
+            keyPassword "KeyAlias-InternalBrowserRedirectApp-Password"
+        }
+    }
+
+
     buildTypes {
         release {
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
 

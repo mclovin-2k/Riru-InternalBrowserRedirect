@@ -16,28 +16,23 @@ task magisk(type: Zip) {
     from(project(":remote").file("build/outputs/remote-library")) {
         include("classes.dex")
         rename("classes.dex", "ibr.dex")
-        into "system/framework/"
+        into "framework/"
     }
     from(project(":remote").fileTree("build/outputs/remote-library/armeabi-v7a")) {
         include "*.so"
-        into "system/lib"
+        into "riru/lib"
     }
     from(project(":remote").fileTree("build/outputs/remote-library/arm64-v8a")) {
         include "*.so"
-        into "system/lib64"
-    }
-    from(project(":remote").file("build/outputs/remote-library")) {
-        include("classes.dex")
-        rename("classes.dex", "ibr.dex")
-        into "system_x86/framework/"
+        into "riru/lib64"
     }
     from(project(":remote").fileTree("build/outputs/remote-library/x86")) {
         include "*.so"
-        into "system_x86/lib"
+        into "riru_x86/lib"
     }
     from(project(":remote").fileTree("build/outputs/remote-library/x86_64")) {
         include "*.so"
-        into "system_x86/lib64"
+        into "riru_x86/lib64"
     }
     from(project(":app").file("build/outputs/apk/release/app-release-unsigned.apk")) {
         rename {

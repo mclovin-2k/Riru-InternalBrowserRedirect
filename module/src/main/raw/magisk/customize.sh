@@ -19,16 +19,16 @@ if [ "$API" -lt "23" ];then
 fi
 
 if [ "$ARCH" = "x86" ] || [ "$ARCH" = "x64" ]; then
-  rm -rf ${MODPATH}/system
-  mv "${MODPATH}/system_x86" "${MODPATH}/system"
+  rm -rf ${MODPATH}/riru
+  mv "${MODPATH}/riru_x86" "${MODPATH}/riru"
 else
-  rm -rf ${MODPATH}/system_x86
+  rm -rf ${MODPATH}/riru_x86
 fi
 
 # Remove 64-bit library
 if [[ "$IS64BIT" = false ]]; then
   ui_print "- Removing 64-bit libraries"
-  rm -rf "$MODPATH/system/lib64"
+  rm -rf "$MODPATH/riru/lib64"
 fi
 
 # Create userdata directory
